@@ -14,13 +14,6 @@ export const createNewBet = (to, arbiter, ether) => {
   }
 }
 
-export function setAddress(address) {
-  return {
-    type: 'SET_ADDRESS',
-    address,
-  }
-}
-
 export function setError(error) {
   return {
     type: 'SET_ERROR',
@@ -47,10 +40,25 @@ export function fetchAddress() {
 
       let address = window.web3.eth.accounts[0];
       if (address === undefined) {
-        console.log('called')
         dispatch(setError('Please unlock MetaMask and reload the page.'))
       } else {
-        dispatch(setAddress(address))
+        dispatch({
+          type: 'GET_ADDRESS',
+          payload: address,
+        });
+        let balance;
+        window.web3.eth.getBalance(address, (error, result) => {
+          if (error) {
+            console.log(error)
+          } else {
+            balance =  window.web3.fromWei(result,'ether').toFixed(4);
+            console.log(balance)
+            dispatch({
+              type: 'GET_BALANCE',
+              payload: balance,
+            })
+          }
+        });
       }
     }, 1000)
   }

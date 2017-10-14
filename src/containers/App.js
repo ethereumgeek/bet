@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
-import { fetchAddress, fetchBets, setAddress } from "../actions/actions";
+import { fetchAddress, fetchBets } from "../actions/actions";
 import { Header, AddressSelection } from "../components/";
 import "./App.css";
 
@@ -17,19 +17,13 @@ class App extends Component {
     this.props.fetchBets();
   }
 
-  // componentWillReceiveProps(newProps) {
-  //   if(this.props.address === '') {
-  //     this.props.setAddress(newProps.address)
-  //   }
-  // }
-
   render() {
     return (
       <Router>
         <div className="App">
           <Header title='Twibet' />
           <div className="col-md-6 col-md-offset-3">
-            <AddressSelection address={this.props.address}></AddressSelection>
+            <AddressSelection address={this.props.address} balance={this.props.balance}></AddressSelection>
             <Route exact path="/" component={ViewBets}/>
             <Route path="/create" component={Create}/>
           </div>
@@ -41,9 +35,10 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    address: state.bets.address,
+    address: state.account.address,
+    balance: state.account.balance,
     error: state.bets.error,
   };
 };
 
-export default connect(mapStateToProps, { fetchAddress, fetchBets, setAddress })(App);
+export default connect(mapStateToProps, { fetchAddress, fetchBets })(App);

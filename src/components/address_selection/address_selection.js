@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AddressSelection = ({address, value}) => {
+const AddressSelection = ({address, balance}) => {
   return (
     <div className="panel panel-default">
       <div className="panel-heading">
@@ -11,7 +11,7 @@ const AddressSelection = ({address, value}) => {
           {address}
         </div>
         <div className="col-md-6">
-          Ether Available: {value}
+          Ether Available: {balance}
         </div>
       </div>
     </div>
