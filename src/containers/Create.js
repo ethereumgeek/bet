@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { createNewBet } from '../actions/'
 import './Create.css'
 
@@ -28,7 +29,7 @@ const testState = {
   arbitrationAddress: '0xec280d80ec3b1398a8bfc2d64f5b59bdc4b0462a',
   arbitrationFee: 0.005,
   arbitrationBonus: 0,
-  arbitrationTimeout: '',
+  arbitrationTimeout: 0,
 }
 class Create extends Component {
   constructor(props) {
@@ -54,13 +55,15 @@ class Create extends Component {
       this.state.p1Address,
       this.state.p2Address,
       this.state.arbiter,
-      '',
+      '0xdfbcd696a16a7c86b852aa2ddd2dedc7a3feaf78', // dummy hash used for testing
       this.state.p1Wager,
       this.state.p2Wager,
       this.state.arbitrationFee,
       this.state.arbitrationBonus,
-      this.state.arbitrationTimeout
+      this.state.arbitrationTimeout,
+      this.state.statement,
     )
+    this.props.history.push('/')
   }
 
   render() {
@@ -181,4 +184,4 @@ class Create extends Component {
   }
 }
 
-export default connect(null, { createNewBet })(Create);
+export default connect(null, { createNewBet })(withRouter(Create));

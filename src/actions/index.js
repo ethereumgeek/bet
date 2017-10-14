@@ -49,20 +49,19 @@ const getAccountInfo = (dispatch) => {
   }
 }
 
-export const createNewBet = (person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks) => {
+export const createNewBet = (person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks, textOfBet) => {
   return dispatch => {
-    const contract = createContractInstance(SMB_ABI, SMB_ADDRESS)
+    const contract = createContractInstance(JSON.parse(SMB_ABI), SMB_ADDRESS)
 
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
-    
-    contract.createBet(person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks, (error, result) => {
+
+    debugger;
+    let bytes = strToByteArray(textOfBet)
+    let num = byteArrayToLong(bytes)
+    contract.createBet(person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks, num, (error, result) => {
       if(!error) {
         console.log(result)
-        dispatch({
-          type: CREATE_NEW_BET,
-          payload: result
-        });
       } else {
         console.error(error);
         dispatch(setError(error))
@@ -133,6 +132,23 @@ function createContractEventInstance(){
 
     // return contractInstance.SomeEvent(indexedEventValues, filterOptions);
 }
+
+function strToByteArray(str) {
+  let byteArray = []
+  for (let i = 0; i < str.length; i++){
+    byteArray.push(str.charCodeAt(i));
+  }
+  return byteArray
+}
+
+function byteArrayToLong(byteArray) {
+    let value = 0;
+    for (let i = byteArray.length - 1; i >= 0; i--) {
+        value = (value * 256) + byteArray[i];
+    }
+
+    return value;
+};
 
 const createContractInstance = (contractAbi, contractAddress) => {
   const contract = window.web3.eth.contract(contractAbi)

@@ -19,6 +19,8 @@ export default function bets(state = initial, action) {
       return Object.assign({}, state, {
         bets: action.bets
       });
+    case "CREATE_NEW_BET":
+      return Object.assign({})
     default:
       return state;
   }
