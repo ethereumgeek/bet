@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
-import { fetchAddress, fetchBets } from "../actions/actions";
+import { initializeWeb3 } from "../actions/";
 import { Header, AddressSelection } from "../components/";
 import "./App.css";
 
@@ -13,8 +13,7 @@ import ViewBets from './ViewBets'
 
 class App extends Component {
   componentWillMount() {
-    this.props.fetchAddress();
-    this.props.fetchBets();
+    this.props.initializeWeb3();
   }
 
   render() {
@@ -41,4 +40,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { fetchAddress, fetchBets })(App);
+export default connect(mapStateToProps, { initializeWeb3 })(App);
