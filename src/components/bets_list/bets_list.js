@@ -8,16 +8,16 @@ const BetsList = ({bets}) => {
           <th>Better</th>
           <th>Arbiter</th>
           <th>Value</th>
-          <td>Challenge Content </td>
+          <th>Challenge Content</th>
         </tr>
       </thead>
       <tbody>
         {bets.map( (bet, id) => (
           <tr key={id}>
-            <td>bet.better</td>
-            <td>bet.arbiter</td>
-            <td>bet.value</td>
-            <td>bet.content</td>
+            <td>{bet.better}</td>
+            <td>{bet.arbiter}</td>
+            <td>{bet.value}</td>
+            <td>{bet.content}</td>
           </tr>
         ))}
       </tbody>

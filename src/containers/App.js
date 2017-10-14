@@ -1,8 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import {
+  BrowserRouter as Router,
+  Route,
+} from 'react-router-dom';
 import { fetchAddress, fetchBets, setAddress } from "../actions/actions";
-import { BetsList, Header, AddressSelection } from "../components/";
+import { Header, AddressSelection } from "../components/";
 import "./App.css";
+
+import Create from './Create'
+import ViewBets from './ViewBets'
 
 class App extends Component {
   componentWillMount() {
@@ -18,25 +25,16 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <Header title='Twibet' />
-        <div className="col-md-6 col-md-offset-3">
-          <AddressSelection address={this.props.address} />
-          <BetsList bets={this.props.bets} />
-
-          <form className="form-inline">
-            <div className="form-group">
-              <input type="text" className="form-control" placeholder="Better" />
-            </div>
-            <div className="form-group">
-              <input type="text" className="form-control" placeholder="Arbiter" />
-            </div>
-            <div className="form-group">
-              <input type="number" className="form-control" placeholder="Value" />
-            </div>
-          </form>
+      <Router>
+        <div className="App">
+          <Header title='Twibet' />
+          <div className="col-md-6 col-md-offset-3">
+            <AddressSelection address={this.props.address}></AddressSelection>
+            <Route exact path="/" component={ViewBets}/>
+            <Route path="/create" component={Create}/>
+          </div>
         </div>
-      </div>
+      </Router>
     );
   }
 }
@@ -45,7 +43,6 @@ const mapStateToProps = state => {
   return {
     address: state.bets.address,
     error: state.bets.error,
-    bets: state.bets.bets,
   };
 };
 
