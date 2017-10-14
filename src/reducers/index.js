@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
+import bets from './bets';
 
 const rootReducer = combineReducers({
-  state: (state = {}) => state
+  bets,
 });
 
 export default rootReducer;
