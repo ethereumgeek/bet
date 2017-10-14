@@ -56,7 +56,6 @@ export const createNewBet = (person1, person2, arbiter, hashOfBet, person1Wager,
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
 
-    debugger;
     let bytes = strToByteArray(textOfBet)
     let num = byteArrayToLong(bytes)
     contract.createBet(person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks, num, (error, result) => {
