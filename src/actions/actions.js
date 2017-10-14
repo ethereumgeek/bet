@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 
 const CREATE_NEW_BET = 'CREATE_NEW_BET';
 
@@ -5,11 +6,13 @@ const CREATE_NEW_BET = 'CREATE_NEW_BET';
 export const createNewBet = (to, arbiter, ether) => {
   return async(dispatch) => {
     // Web3 sendTransactions
-    const result;
+    let result;
     dispatch({
       type: CREATE_NEW_BET,
-      payload: result;
+      payload: result,
     })
+  }
+}
 
 export function setAddress(address) {
   return {
@@ -33,17 +36,30 @@ export function setBets(bets) {
 }
 
 export function init() {
-  if (typeof web3 !== 'undefined') {
-    web3 = new Web3(web3.currentProvider);
+  if (typeof window.web3 !== 'undefined') {
+    window.web3 = new Web3(window.web3.currentProvider);
   } else {
     // set the provider you want from Web3.providers
-    web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
   }
 
-  let address = web3.eth.defaultAddress;
+  let address = window.web3.eth.defaultAddress;
   if (address === undefined) {
     return setError('Please unlock MetaMask and reload the page.')
   } else {
     return setAddress(address)
+  }
+}
+
+
+export function fetchBets() {
+  return dispatch => {
+    // get contract stuff
+    let bets = [
+      {better: '0x12345', arbiter: '0xfffffff', value: '123'},
+      {better: '0xac5e3', arbiter: '0x009c123', value: '623'},
+      {better: '0x84c8a', arbiter: '0x6cd35da', value: '733'}
+    ];
+    dispatch(setBets(bets))
   }
 }

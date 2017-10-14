@@ -5,7 +5,7 @@ const initial = {
   error: null
 }
 
-export function bets(state = initial, action) {
+export default function bets(state = initial, action) {
   switch (action.type) {
     case 'SET_ADDRESS':
       return Object.assign({}, state, {
