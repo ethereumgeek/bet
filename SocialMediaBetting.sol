@@ -7,7 +7,7 @@ contract SocialMediaBetting {
 
     function SocialMediaBetting() public {
     }
-    
+
     function createBet(
         address _person1, 
         address _person2, 
@@ -17,7 +17,7 @@ contract SocialMediaBetting {
         uint _person2Owes,
         uint _arbitrationFee,
         uint _arbiterBonus,
-        uint _arbitrationDays) public returns (uint) {
+        uint _arbitrationMaxBlocks) public returns (uint) {
         Bet bet = new Bet(
             _person1, 
             _person2, 
@@ -27,7 +27,7 @@ contract SocialMediaBetting {
             _person2Owes,
             _arbitrationFee,
             _arbiterBonus,
-            _arbitrationDays);
+            _arbitrationMaxBlocks);
         
         uint betIndex = bets.push(bet) - 1;
         
@@ -39,13 +39,11 @@ contract SocialMediaBetting {
     }
     
     function getBet(uint _betIndex) public view returns (Bet) {
-        
         require(_betIndex < bets.length);
         return bets[_betIndex];
     }
     
     function getBetsForAddress(address _addr) public view returns (uint[]) {
-        
         return betsForAddress[_addr];
     }
 }
@@ -70,11 +68,24 @@ contract Bet {
     uint person2Paid;
     uint arbitrationFee;
     uint arbiterBonus;
-    uint arbitrationDays;
+    uint arbitrationMaxBlocks;
+    uint arbitrationStartBlock;
     bool signedByArbiter;
     bool arbitrationAllowed;
     bool arbitrationOccured;
+    bool betClosed;
 
+    function sub(uint a, uint b) internal pure returns (uint) {
+        assert(b <= a);
+        return a - b;
+    }
+    
+    function add(uint a, uint b) internal pure returns (uint) {
+        uint c = a + b;
+        assert(c >= a);
+        return c;
+    }
+  
     function Bet(
         address _person1, 
         address _person2, 
@@ -84,12 +95,11 @@ contract Bet {
         uint _person2Owes,
         uint _arbitrationFee,
         uint _arbiterBonus,
-        uint _arbitrationDays
+        uint _arbitrationMaxBlocks
         ) public {
-            
-            require(_arbiterBonus < _person1Owes + _person2Owes);
-            require(_arbitrationFee + (_arbiterBonus+1)/2 < _person1Owes);
-            require(_arbitrationFee + (_arbiterBonus+1)/2 < _person2Owes);
+            require (_arbiterBonus < add(_person1Owes, _person2Owes));
+            require (add(_arbitrationFee, add(_arbiterBonus,1)/2) < _person1Owes);
+            require (add(_arbitrationFee, add(_arbiterBonus,1)/2) < _person2Owes);
             
             person1 = _person1;
             person2 = _person2;
@@ -99,28 +109,28 @@ contract Bet {
             person2Owes = _person2Owes;
             arbitrationFee = _arbitrationFee;
             arbiterBonus = _arbiterBonus;
-            arbitrationDays = _arbitrationDays;
+            arbitrationMaxBlocks = _arbitrationMaxBlocks;
     }
-    
+
     function deposit() public payable {
-        
         require(msg.sender == person1 || msg.sender == person2);
+        require (!betClosed);
         
         uint refund;
         if (msg.sender == person1) {
-            person1Paid += msg.value;
+            add(person1Paid, msg.value);
             
             if(person1Paid > person1Owes) {
-                refund = person1Paid - person1Owes;
+                refund = sub(person1Paid, person1Owes);
                 person1Paid = person1Owes;
                 person1.transfer(refund);
             }
         }
         else if (msg.sender == person2) {
-            person2Paid += msg.value;
+            add(person2Paid, msg.value);
             
             if(person2Paid > person2Owes) {
-                refund = person2Paid - person2Owes;
+                refund = sub(person2Paid, person2Owes);
                 person2Paid = person2Owes;
                 person2.transfer(refund);
             }
@@ -128,13 +138,11 @@ contract Bet {
     }
     
     function withdrawAll() public {
-
         require(msg.sender == person1 || msg.sender == person2);
         
         if(resolution != ResolutionStatus.None) {
-            
+            betClosed = true;
             if(resolution == ResolutionStatus.Person1Wins) {
-                
                 if(!arbitrationOccured) {
                     person2.transfer(arbitrationFee/2);
                 }
@@ -148,41 +156,46 @@ contract Bet {
                 person2.transfer(this.balance);
             }
             else if(resolution == ResolutionStatus.Tie) {
-                
                 if(arbitrationOccured) {
-                    person1.transfer(person1Paid - (arbitrationFee+arbiterBonus)/2);
+                    person1.transfer(sub(person1Paid, add(arbitrationFee,arbiterBonus)/2));
                 }
                 else {
-                    person1.transfer(person1Paid - arbiterBonus/2);
+                    person1.transfer(sub(person1Paid, arbiterBonus/2));
                 }
                 person2.transfer(this.balance);
             }
         }
-        else if(signedByArbiter == false) {
-            
+        else if(signedByArbiter == false || (arbitrationAllowed && block.number >= add(arbitrationStartBlock, arbitrationMaxBlocks))) {
             person1.transfer(person1Paid);
             person2.transfer(person2Paid);
         }
     }
     
     function arbiterSign() public {
-        if (msg.sender != arbiter || signedByArbiter || person1Paid < person1Owes || person2Paid < person2Owes) return;
+        require (msg.sender == arbiter);
+        require (!signedByArbiter);
+        require (person1Paid == person1Owes);
+        require (person2Paid == person2Owes);
+        require (!betClosed);
         
         signedByArbiter = true;
         arbiter.transfer(arbiterBonus);
     }
     
     function startArbitration() public {
-        require(msg.sender == person1 || msg.sender == person2);
+        require (msg.sender == person1 || msg.sender == person2);
+        require (!arbitrationAllowed);
+        require (!betClosed);
+        
         arbitrationAllowed = true;
+        arbitrationStartBlock = block.number;
     }
 
     
     function resolve(ResolutionStatus _resolution) public {
-        
-        require(msg.sender == person1 || msg.sender == person2 || msg.sender == arbiter);
-
-        if (resolution != ResolutionStatus.None) return;
+        require (msg.sender == person1 || msg.sender == person2 || msg.sender == arbiter);
+        require (resolution == ResolutionStatus.None);
+        require (!betClosed);
         
         if (msg.sender == person1) {
             person1Resolution = _resolution;
