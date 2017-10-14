@@ -35,7 +35,7 @@ export function setBets(bets) {
   }
 }
 
-export function init() {
+export function getAddress() {
   if (typeof window.web3 !== 'undefined') {
     window.web3 = new Web3(window.web3.currentProvider);
   } else {
@@ -43,7 +43,7 @@ export function init() {
     window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
   }
 
-  let address = window.web3.eth.defaultAddress;
+  let address = window.web3.eth.accounts[0];
   if (address === undefined) {
     return setError('Please unlock MetaMask and reload the page.')
   } else {
