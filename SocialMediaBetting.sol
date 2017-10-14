@@ -7,6 +7,19 @@ contract SocialMediaBetting {
     function SocialMediaBetting() public {
     }
 
+    event LogBetCreated(
+        uint id,
+        address indexed _person1, 
+        address indexed _person2, 
+        address indexed _arbiter, 
+        bytes32 _hashOfBet,
+        uint _person1Owes,
+        uint _person2Owes,
+        uint _arbitrationFee,
+        uint _arbiterBonus,
+        uint _arbitrationMaxBlocks,
+        byte[] _textOfBet);
+
     function createBet(
         address _person1, 
         address _person2, 
@@ -27,8 +40,7 @@ contract SocialMediaBetting {
             _person2Owes,
             _arbitrationFee,
             _arbiterBonus,
-            _arbitrationMaxBlocks,
-            _textOfBet);
+            _arbitrationMaxBlocks);
         
         uint betIndex = bets.push(bet) - 1;
         
@@ -36,6 +48,19 @@ contract SocialMediaBetting {
         betsForAddress[_person2].push(betIndex);
         betsForAddress[_arbiter].push(betIndex);
         
+        LogBetCreated(
+             betIndex,
+             _person1, 
+             _person2, 
+             _arbiter, 
+             _hashOfBet,
+             _person1Owes,
+             _person2Owes,
+             _arbitrationFee,
+            _arbiterBonus,
+            _arbitrationMaxBlocks,
+            _textOfBet);
+
         return betIndex;
     }
     
@@ -51,18 +76,6 @@ contract SocialMediaBetting {
 
 
 contract Bet {
-
-    event LogBetCreated(
-        address indexed _person1, 
-        address indexed _person2, 
-        address indexed _arbiter, 
-        bytes32 _hashOfBet,
-        uint _person1Owes,
-        uint _person2Owes,
-        uint _arbitrationFee,
-        uint _arbiterBonus,
-        uint _arbitrationMaxBlocks,
-        byte[] _textOfBet);
 
     enum ResolutionStatus { None, Person1Wins, Person2Wins, Tie }
 
@@ -108,8 +121,7 @@ contract Bet {
         uint _person2Owes,
         uint _arbitrationFee,
         uint _arbiterBonus,
-        uint _arbitrationMaxBlocks,
-        byte[] _textOfBet
+        uint _arbitrationMaxBlocks
         ) public {
             require (_arbiterBonus < add(_person1Owes, _person2Owes));
             require (add(_arbitrationFee, add(_arbiterBonus,1)/2) < _person1Owes);
@@ -124,18 +136,6 @@ contract Bet {
             arbitrationFee = _arbitrationFee;
             arbiterBonus = _arbiterBonus;
             arbitrationMaxBlocks = _arbitrationMaxBlocks;
-            
-            LogBetCreated(
-                 _person1, 
-                 _person2, 
-                 _arbiter, 
-                 _hashOfBet,
-                 _person1Owes,
-                 _person2Owes,
-                 _arbitrationFee,
-                 _arbiterBonus,
-                 _arbitrationMaxBlocks,
-                 _textOfBet);
     }
 
     function deposit() public payable {
@@ -144,16 +144,15 @@ contract Bet {
         
         uint refund;
         if (msg.sender == person1) {
-            add(person1Paid, msg.value);
+            person1Paid = add(person1Paid, msg.value);
             
             if(person1Paid > person1Owes) {
                 refund = sub(person1Paid, person1Owes);
                 person1Paid = person1Owes;
                 person1.transfer(refund);
             }
-        }
-        else if (msg.sender == person2) {
-            add(person2Paid, msg.value);
+        } else if (msg.sender == person2) {
+            person2Paid = add(person2Paid, msg.value);
             
             if(person2Paid > person2Owes) {
                 refund = sub(person2Paid, person2Owes);
