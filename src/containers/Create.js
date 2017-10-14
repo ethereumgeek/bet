@@ -1,44 +1,47 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { createNewBet } from '../actions/actions'
-import './Create.css'
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { createNewBet } from "../actions/";
+import "./Create.css";
 
 const numericInputs = [
-  'p1Wager', 'p2Wager', 'arbitrationFee', 'arbitrationBonus'
-]
+  "p1Wager",
+  "p2Wager",
+  "arbitrationFee",
+  "arbitrationBonus"
+];
 
 class Create extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      statement: '',
-      p1Address: '',
-      p2Address: '',
+      statement: "",
+      p1Address: "",
+      p2Address: "",
       p1Wager: 0,
       p2Wager: 0,
-      arbitrationAddress: '',
+      arbitrationAddress: "",
       arbitrationFee: 0,
       arbitrationBonus: 0,
-      arbitrationTimeout: null,
-    }
+      arbitrationTimeout: null
+    };
   }
 
-  handleInputChange = (e) => {
-    let isNumeric = numericInputs.includes(e.target.name)
-    e.preventDefault()
+  handleInputChange = e => {
+    let isNumeric = numericInputs.includes(e.target.name);
+    e.preventDefault();
     this.setState({
       [e.target.name]: isNumeric ? Number(e.target.value) : e.target.value
-    })
-  }
+    });
+  };
 
-  handleFocus = (e) => {
-    e.target.select()
-  }
+  handleFocus = e => {
+    e.target.select();
+  };
 
-  createBet = (e) => {
-    e.preventDefault()
+  createBet = e => {
+    e.preventDefault();
     // this.props.createNewBet() with this.state
-  }
+  };
 
   render() {
     return (
@@ -46,106 +49,145 @@ class Create extends Component {
         <h1>Create New Bet</h1>
         <form>
           <div className="form-group">
-            <textarea className="form-control" rows="5"
+            <textarea
+              className="form-control"
+              rows="5"
               placeholder="What statement will you bet on?"
               name="statement"
               value={this.state.statement}
-              onChange={this.handleInputChange}>
-            </textarea>
+              onChange={this.handleInputChange}
+            />
           </div>
           <br />
           <div className="form-group">
             <div className="row">
               <div className="col-md-6">
                 <label>Who believes this statement will be true?</label>
-                <input className="form-control" placeholder="Address"
+                <input
+                  className="form-control"
+                  placeholder="Address"
                   name="p1Address"
                   value={this.state.p1Address}
-                  onChange={this.handleInputChange} />
+                  onChange={this.handleInputChange}
+                />
               </div>
               <div className="col-md-6">
                 <label>What will they wager?</label>
                 <div className="input-group">
-                  <input className="form-control" type="number" placeholder="Wager"
+                  <input
+                    className="form-control"
+                    type="number"
+                    placeholder="Wager"
                     name="p1Wager"
                     value={this.state.p1Wager}
                     onChange={this.handleInputChange}
-                    onFocus={this.handleFocus} />
+                    onFocus={this.handleFocus}
+                  />
                   <span className="input-group-addon">ETH</span>
                 </div>
               </div>
             </div>
-            <span className="pull-right">Total (including arbitration fees): {
-              this.state.p1Wager + (this.state.arbitrationFee + this.state.arbitrationBonus) / 2
-            }</span>
+            <span className="pull-right">
+              Total (including arbitration fees):{" "}
+              {this.state.p1Wager +
+                (this.state.arbitrationFee + this.state.arbitrationBonus) / 2}
+            </span>
           </div>
           <br />
           <div className="form-group">
             <div className="row">
               <div className="col-md-6">
                 <label>Who disagrees?</label>
-                <input className="form-control" placeholder="Address"
+                <input
+                  className="form-control"
+                  placeholder="Address"
                   name="p2Address"
                   value={this.state.p2Address}
-                  onChange={this.handleInputChange} />
+                  onChange={this.handleInputChange}
+                />
               </div>
               <div className="col-md-6">
                 <label>What will they wager?</label>
                 <div className="input-group">
-                  <input className="form-control" placeholder="Wager"
+                  <input
+                    className="form-control"
+                    placeholder="Wager"
                     name="p2Wager"
                     value={this.state.p2Wager}
                     onChange={this.handleInputChange}
-                    onFocus={this.handleFocus} />
+                    onFocus={this.handleFocus}
+                  />
                   <span className="input-group-addon">ETH</span>
                 </div>
               </div>
             </div>
-            <span className="pull-right">Total (including arbitration fees): {
-              this.state.p2Wager + (this.state.arbitrationFee + this.state.arbitrationBonus) / 2
-            }</span>
+            <span className="pull-right">
+              Total (including arbitration fees):{" "}
+              {this.state.p2Wager +
+                (this.state.arbitrationFee + this.state.arbitrationBonus) / 2}
+            </span>
           </div>
           <br />
           <div className="form-group">
             <label>Who will arbitrate this bet?</label>
-            <input className="form-control" placeholder="Address"
+            <input
+              className="form-control"
+              placeholder="Address"
               name="arbitrationAddress"
               value={this.state.arbitrationAddress}
-              onChange={this.handleInputChange} />
+              onChange={this.handleInputChange}
+            />
           </div>
           <div className="form-group">
             <div className="row">
               <div className="col-md-6">
                 <label>Arbitration Fee</label>
-                <input className="form-control" type="number" placeholder="Fee"
+                <input
+                  className="form-control"
+                  type="number"
+                  placeholder="Fee"
                   name="arbitrationFee"
                   value={this.state.arbitrationFee}
                   onChange={this.handleInputChange}
-                  onFocus={this.handleFocus} />
+                  onFocus={this.handleFocus}
+                />
               </div>
               <div className="col-md-6">
                 <label>Arbitration Bonus</label>
-                <input className="form-control" type="number" placeholder="Bonus"
+                <input
+                  className="form-control"
+                  type="number"
+                  placeholder="Bonus"
                   name="arbitrationBonus"
                   value={this.state.arbitrationBonus}
                   onChange={this.handleInputChange}
-                  onFocus={this.handleFocus} />
+                  onFocus={this.handleFocus}
+                />
               </div>
             </div>
           </div>
           <br />
           <div className="form-group">
             <label>Arbitration timeout (optional)</label>
-            <input className="form-control" type="number" placeholder="Arbitration timeout in days"
+            <input
+              className="form-control"
+              type="number"
+              placeholder="Arbitration timeout in days"
               name="arbitrationTimeout"
               value={this.state.arbitrationTimeout}
               onChange={this.handleInputChange}
-              onFocus={this.handleFocus} />
+              onFocus={this.handleFocus}
+            />
           </div>
-          <button className="btn pull-right create-btn" onClick={this.createBet}>Create Bet</button>
+          <button
+            className="btn pull-right create-btn"
+            onClick={this.createBet}
+          >
+            Create Bet
+          </button>
         </form>
       </div>
-    )
+    );
   }
 }
 
