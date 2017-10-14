@@ -35,20 +35,26 @@ export function setBets(bets) {
   }
 }
 
-export function getAddress() {
-  if (typeof window.web3 !== 'undefined') {
-    window.web3 = new Web3(window.web3.currentProvider);
-  } else {
-    // set the provider you want from Web3.providers
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+export function fetchAddress() {
+  return dispatch => {
+    setTimeout(() => {
+      if (typeof window.web3 !== 'undefined') {
+        window.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        // set the provider you want from Web3.providers
+        window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      }
+
+      let address = window.web3.eth.accounts[0];
+      if (address === undefined) {
+        dispatch(setError('Please unlock MetaMask and reload the page.'))
+      } else {
+        dispatch(setAddress(address))
+        dispatch(fetchBets())
+      }
+    }, 1000)
   }
 
-  let address = window.web3.eth.accounts[0];
-  if (address === undefined) {
-    return setError('Please unlock MetaMask and reload the page.')
-  } else {
-    return setAddress(address)
-  }
 }
 
 
