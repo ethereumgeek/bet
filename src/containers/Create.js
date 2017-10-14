@@ -19,7 +19,7 @@ class Create extends Component {
       arbitrationAddress: '',
       arbitrationFee: 0,
       arbitrationBonus: 0,
-      arbitrationTimeout: null,
+      arbitrationTimeout: '',
     }
   }
 
@@ -117,30 +117,39 @@ class Create extends Component {
             <div className="row">
               <div className="col-md-6">
                 <label>Arbitration Fee</label>
-                <input className="form-control" type="number" placeholder="Fee"
-                  name="arbitrationFee"
-                  value={this.state.arbitrationFee}
-                  onChange={this.handleInputChange}
-                  onFocus={this.handleFocus} />
+                <div className="input-group">
+                  <input className="form-control" type="number" placeholder="Fee"
+                    name="arbitrationFee"
+                    value={this.state.arbitrationFee}
+                    onChange={this.handleInputChange}
+                    onFocus={this.handleFocus} />
+                  <span className="input-group-addon">ETH</span>
+                </div>
               </div>
               <div className="col-md-6">
                 <label>Arbitration Bonus</label>
-                <input className="form-control" type="number" placeholder="Bonus"
-                  name="arbitrationBonus"
-                  value={this.state.arbitrationBonus}
-                  onChange={this.handleInputChange}
-                  onFocus={this.handleFocus} />
+                <div className="input-group">
+                  <input className="form-control" type="number" placeholder="Bonus"
+                    name="arbitrationBonus"
+                    value={this.state.arbitrationBonus}
+                    onChange={this.handleInputChange}
+                    onFocus={this.handleFocus} />
+                  <span className="input-group-addon">ETH</span>
+                </div>
               </div>
             </div>
           </div>
           <br />
           <div className="form-group">
-            <label>Arbitration timeout (optional)</label>
-            <input className="form-control" type="number" placeholder="Arbitration timeout in days"
-              name="arbitrationTimeout"
-              value={this.state.arbitrationTimeout}
-              onChange={this.handleInputChange}
-              onFocus={this.handleFocus} />
+            <label>In case of a challenge, how long until the bet expires? (optional)</label>
+            <div className="input-group">
+              <input className="form-control" type="number" placeholder="Arbitration timeout"
+                name="arbitrationTimeout"
+                value={this.state.arbitrationTimeout}
+                onChange={this.handleInputChange}
+                onFocus={this.handleFocus} />
+              <span className="input-group-addon">Days</span>
+            </div>
           </div>
           <button className="btn pull-right create-btn" onClick={this.createBet}>Create Bet</button>
         </form>
