@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { CONTRACT_ADDRESS, CONTRACT_ABI, CONTRACT_BYTECODE } from '../config/';
+import { SMB_ABI, SMB_ADDRESS } from '../config'
 
 export const CREATE_NEW_BET = "CREATE_NEW_BET";
 
@@ -49,15 +49,26 @@ const getAccountInfo = (dispatch) => {
   }
 }
 
-export const createNewBet = (to, arbiter, ether) => {
-  return async dispatch => {
-    // Web3 sendTransactions
-    let result;
-    dispatch({
-      type: CREATE_NEW_BET,
-      payload: result
-    });
-  };
+export const createNewBet = (person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks) => {
+  return dispatch => {
+    const contract = createContractInstance(SMB_ABI, SMB_ADDRESS)
+
+    // Ensure default account is set to sign the transaction
+    window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
+    
+    contract.createBet(person1, person2, arbiter, hashOfBet, person1Wager, person2Wager, arbitrationFee, arbiterBonus, arbitrationMaxBlocks, (error, result) => {
+      if(!error) {
+        console.log(result)
+        dispatch({
+          type: CREATE_NEW_BET,
+          payload: result
+        });
+      } else {
+        console.error(error);
+        dispatch(setError(error))
+      }
+    })
+  }
 };
 
 export function setError(error) {
@@ -123,11 +134,9 @@ function createContractEventInstance(){
     // return contractInstance.SomeEvent(indexedEventValues, filterOptions);
 }
 
-const createContractInstance = (contractAddress) => {
-  const abi = ''
-
-  const contract = window.web3.eth.contract(abi)
-  const contractInstance = contract.at('0x12334');
+const createContractInstance = (contractAbi, contractAddress) => {
+  const contract = window.web3.eth.contract(contractAbi)
+  const contractInstance = contract.at(contractAddress);
 
   return contractInstance;
 }

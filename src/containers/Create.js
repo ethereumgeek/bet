@@ -7,20 +7,33 @@ const numericInputs = [
   'p1Wager', 'p2Wager', 'arbitrationFee', 'arbitrationBonus'
 ]
 
+const emptyState = {
+  statement: '',
+  p1Address: '',
+  p2Address: '',
+  p1Wager: 0,
+  p2Wager: 0,
+  arbitrationAddress: '',
+  arbitrationFee: 0,
+  arbitrationBonus: 0,
+  arbitrationTimeout: '',
+}
+
+const testState = {
+  statement: 'Hello world!',
+  p1Address: '0x37467b5a9d575a46dd7446a66a17339e4b7f47dc',
+  p2Address: '0xec280d80ec3b1398a8bfc2d64f5b59bdc4b0462a',
+  p1Wager: 0.01,
+  p2Wager: 0.01,
+  arbitrationAddress: '0xec280d80ec3b1398a8bfc2d64f5b59bdc4b0462a',
+  arbitrationFee: 0.005,
+  arbitrationBonus: 0,
+  arbitrationTimeout: '',
+}
 class Create extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      statement: '',
-      p1Address: '',
-      p2Address: '',
-      p1Wager: 0,
-      p2Wager: 0,
-      arbitrationAddress: '',
-      arbitrationFee: 0,
-      arbitrationBonus: 0,
-      arbitrationTimeout: '',
-    }
+    this.state = testState
   }
 
   handleInputChange = (e) => {
@@ -37,7 +50,17 @@ class Create extends Component {
 
   createBet = (e) => {
     e.preventDefault()
-    // this.props.createNewBet() with this.state
+    this.props.createNewBet(
+      this.state.p1Address,
+      this.state.p2Address,
+      this.state.arbiter,
+      '',
+      this.state.p1Wager,
+      this.state.p2Wager,
+      this.state.arbitrationFee,
+      this.state.arbitrationBonus,
+      this.state.arbitrationTimeout
+    )
   }
 
   render() {
@@ -92,7 +115,7 @@ class Create extends Component {
               <div className="col-md-6">
                 <label>What will they wager?</label>
                 <div className="input-group">
-                  <input className="form-control" placeholder="Wager"
+                  <input className="form-control" type="number" placeholder="Wager"
                     name="p2Wager"
                     value={this.state.p2Wager}
                     onChange={this.handleInputChange}
