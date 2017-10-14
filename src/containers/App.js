@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import logo from '../images/logo.svg';
 import './App.css';
 
@@ -18,4 +19,8 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return
+}
+
+export connect(mapStateToProps, {})(App);
