@@ -1,11 +1,9 @@
-const initial = {
-  address: "",
-  bets: [],
-  newBet: {},
-  error: null
-};
+const INITIAL_STATE = {
+  address: '',
+  balance: null
+}
 
-export default function bets(state = initial, action) {
+export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case "SET_ADDRESS":
       return Object.assign({}, state, {

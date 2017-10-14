@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 
-const CREATE_NEW_BET = 'CREATE_NEW_BET';
+export const CREATE_NEW_BET = 'CREATE_NEW_BET';
 
 
 export const createNewBet = (to, arbiter, ether) => {
@@ -36,7 +36,7 @@ export function setBets(bets) {
 }
 
 export function fetchAddress() {
-  return dispatch => {
+  return async dispatch => {
     setTimeout(() => {
       if (typeof window.web3 !== 'undefined') {
         window.web3 = new Web3(window.web3.currentProvider);
@@ -47,10 +47,10 @@ export function fetchAddress() {
 
       let address = window.web3.eth.accounts[0];
       if (address === undefined) {
+        console.log('called')
         dispatch(setError('Please unlock MetaMask and reload the page.'))
       } else {
         dispatch(setAddress(address))
-        dispatch(fetchBets())
       }
     }, 1000)
   }
@@ -58,8 +58,8 @@ export function fetchAddress() {
 }
 
 
-export function fetchBets() {
-  return dispatch => {
+export function fetchBets(address) {
+  return async dispatch => {
     // get contract stuff
     let bets = [
       {better: '0x12345', arbiter: '0xfffffff', value: '123'},
@@ -68,4 +68,14 @@ export function fetchBets() {
     ];
     dispatch(setBets(bets))
   }
+}
+
+const getBalance = address => {
+  window.web3.eth.getBalance(address,window.web3.eth.defaultBlock,function(error,result){
+     var balance = window.web3.fromWei(result,'ether').toFixed(2);
+     return {
+       type: 'GET_BALANCE',
+       payload: balance,
+     }
+ });
 }
