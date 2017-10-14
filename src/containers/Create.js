@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { createNewBet } from '../actions/actions'
+import { createNewBet } from '../actions/'
 import './Create.css'
 
 const numericInputs = [
