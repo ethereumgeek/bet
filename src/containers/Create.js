@@ -16,8 +16,9 @@ const emptyState = {
   p1Wager: 0,
   p2Wager: 0,
   arbitrationAddress: '',
-  arbitrationFee: 0,
   arbitrationBonus: 0,
+  arbitrationFee: 0,
+  arbitrationWait: '',
   arbitrationTimeout: '',
 }
 
@@ -28,8 +29,9 @@ const testState = {
   p1Wager: 0.01,
   p2Wager: 0.01,
   arbitrationAddress: '0xec280d80ec3b1398a8bfc2d64f5b59bdc4b0462a',
-  arbitrationFee: 0.005,
   arbitrationBonus: 0,
+  arbitrationFee: 0.005,
+  arbitrationWait: 0,
   arbitrationTimeout: 0,
 }
 class Create extends Component {
@@ -59,8 +61,9 @@ class Create extends Component {
       '0xdfbcd696a16a7c86b852aa2ddd2dedc7a3feaf78', // dummy hash used for testing
       this.state.p1Wager,
       this.state.p2Wager,
-      this.state.arbitrationFee,
       this.state.arbitrationBonus,
+      this.state.arbitrationFee,
+      daysToBlocks(this.state.arbitrationWait),
       daysToBlocks(this.state.arbitrationTimeout),
       this.state.statement,
     )
@@ -173,6 +176,17 @@ class Create extends Component {
               <input className="form-control" type="number" placeholder="Arbitration timeout"
                 name="arbitrationTimeout"
                 value={this.state.arbitrationTimeout}
+                onChange={this.handleInputChange}
+                onFocus={this.handleFocus} />
+              <span className="input-group-addon">Days</span>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>If your bet should only be resolved in the future, when should we wait before allowing arbitration? (optional)</label>
+            <div className="input-group">
+              <input className="form-control" type="number" placeholder="Minimum arbitration wait time"
+                name="arbitrationWait"
+                value={this.state.arbitrationWait}
                 onChange={this.handleInputChange}
                 onFocus={this.handleFocus} />
               <span className="input-group-addon">Days</span>

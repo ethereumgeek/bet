@@ -66,8 +66,9 @@ export const createNewBet = (
   hashOfBet,
   person1Wager,
   person2Wager,
-  arbitrationFee,
   arbiterBonus,
+  arbitrationFee,
+  arbitrationAllowedFromBlock,
   arbitrationMaxBlocks,
   textOfBet
 ) => {
@@ -83,10 +84,11 @@ export const createNewBet = (
     console.log("hashOfBet", hashOfBet);
     console.log("person1Wager", window.web3.toWei(person1Wager, "ether"));
     console.log("person2Wager", window.web3.toWei(person2Wager, "ether"));
-    console.log("arbitrationFee", window.web3.toWei(arbitrationFee, "ether"));
     console.log("arbiterBonus", window.web3.toWei(arbiterBonus, "ether"));
-    console.log("arbitrationMaxBlocks", arbitrationMaxBlocks);
-    console.log("ascii", window.web3.fromAscii(textOfBet));
+    console.log("arbitrationFee", window.web3.toWei(arbitrationFee, "ether"));
+    console.log("arbitrationAllowedFromBlock", arbitrationAllowedFromBlock.toString());
+    console.log("arbitrationMaxBlocks", arbitrationMaxBlocks.toString());
+    console.log("textOfBet", textOfBet);
 
     contractInstance.createBet(
       person1,
@@ -95,10 +97,11 @@ export const createNewBet = (
       hashOfBet,
       window.web3.toWei(person1Wager, "ether"),
       window.web3.toWei(person2Wager, "ether"),
-      window.web3.toWei(arbitrationFee, "ether"),
       window.web3.toWei(arbiterBonus, "ether"),
-      arbitrationMaxBlocks,
-      window.web3.fromAscii(textOfBet),
+      window.web3.toWei(arbitrationFee, "ether"),
+      arbitrationAllowedFromBlock.toString(),
+      arbitrationMaxBlocks.toString(),
+      textOfBet,
       (error, result) => {
         if (!error) {
           console.log(result);
