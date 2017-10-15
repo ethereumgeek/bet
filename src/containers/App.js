@@ -5,8 +5,9 @@ import { initializeWeb3 } from "../actions/";
 import { Header, AddressSelection } from "../components/";
 import "./App.css";
 
-import Create from "./Create";
-import ViewBets from "./ViewBets";
+import Create from './Create'
+import ViewBets from './ViewBets'
+import Detail from './Detail'
 
 class App extends Component {
   componentWillMount() {
@@ -23,8 +24,9 @@ class App extends Component {
               address={this.props.address}
               balance={this.props.balance}
             />
-            <Route exact path="/" component={ViewBets} />
-            <Route path="/create" component={Create} />
+            <Route exact path="/" component={ViewBets}/>
+            <Route path="/create" component={Create}/>
+            <Route path="/bets/:id" component={Detail}/>
           </div>
         </div>
       </Router>
