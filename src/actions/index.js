@@ -57,6 +57,49 @@ const getAccountInfo = dispatch => {
   }
 };
 
+export const createNewBet = (
+  person1,
+  person2,
+  arbiter,
+  hashOfBet,
+  person1Wager,
+  person2Wager,
+  arbitrationFee,
+  arbiterBonus,
+  arbitrationMaxBlocks,
+  textOfBet
+) => {
+  return dispatch => {
+    contractInstance = createContractInstance(JSON.parse(SMB_ABI), SMB_ADDRESS);
+
+    // Ensure default account is set to sign the transaction
+    window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
+
+    let bytes = strToByteArray(textOfBet);
+    let num = byteArrayToLong(bytes);
+    contractInstance.createBet(
+      person1,
+      person2,
+      arbiter,
+      hashOfBet,
+      person1Wager,
+      person2Wager,
+      arbitrationFee,
+      arbiterBonus,
+      arbitrationMaxBlocks,
+      num,
+      (error, result) => {
+        if (!error) {
+          console.log(result);
+        } else {
+          console.error(error);
+          dispatch(setError(error));
+        }
+      }
+    );
+  };
+};
+
 export function setError(error) {
   return {
     type: "SET_ERROR",

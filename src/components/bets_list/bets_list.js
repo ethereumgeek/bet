@@ -1,38 +1,28 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import React from 'react';
 
-class BetsList extends Component {
-  handleLinkClicked = index => {
-    this.props.history.push(`/bets/${index}`)
-  }
-
-  render() {
-    const { bets } = this.props
-    console.log(bets)
-    return (
-      <table className="table bg-color-white">
-        <tbody>
-          {bets.map( (bet, id) => (
-            <tr key={id}>
-              <td>
-                <a href={`/bets/${id}`}>
-                  {bet.args._textOfBet}
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
-  }
+const BetsList = ({bets}) => {
+  return (
+    <table className="table bg-color-white">
+      <thead>
+        <tr>
+          <th>Better</th>
+          <th>Arbiter</th>
+          <th>Value</th>
+          <th>Challenge Content</th>
+        </tr>
+      </thead>
+      <tbody>
+        {bets.map( (bet, id) => (
+          <tr key={id}>
+            <td>{bet.better}</td>
+            <td>{bet.arbiter}</td>
+            <td>{bet.value}</td>
+            {/* <td>{bet.content}</td> */}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
 }
 
-const mapStateToProps = state => {
-  return {
-    bets: state.bets.bets,
-  };
-}
-
-const BetsListWrapper = connect(mapStateToProps, {})(withRouter(BetsList))
-export { BetsListWrapper as BetsList }
+export { BetsList };
