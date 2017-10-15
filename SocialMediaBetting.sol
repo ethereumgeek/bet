@@ -146,7 +146,8 @@ contract Bet {
     }
 
     function getState() public view returns (bytes32, uint, uint, uint, uint, uint, uint, uint, uint, uint, bool, bool, bool, bool) {
-        return (hashOfBet,
+        return (
+                hashOfBet,
                 person1Owes,
                 person2Owes,
                 person1Paid,
@@ -160,6 +161,14 @@ contract Bet {
                 arbitrationAllowed,
                 arbitrationOccured,
                 betClosed);
+    }
+
+    function getResolution() public view returns (ResolutionStatus, ResolutionStatus, ResolutionStatus, ResolutionStatus) {
+        return (
+                person1Resolution,
+                person2Resolution,
+                arbiterResolution,
+                resolution);
     }
 
     function deposit() public payable {
