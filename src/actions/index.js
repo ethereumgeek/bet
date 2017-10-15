@@ -77,26 +77,26 @@ export const createNewBet = (
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
 
-    console.log('person1', person1)
-    console.log('person2', person2)
-    console.log('arbiter', arbiter)
-    console.log('hashOfBet', hashOfBet)
-    console.log('person1Wager', window.web3.toWei(person1Wager, 'ether'))
-    console.log('person2Wager', window.web3.toWei(person2Wager, 'ether'))
-    console.log('arbitrationFee', window.web3.toWei(arbitrationFee, 'ether'))
-    console.log('arbiterBonus', window.web3.toWei(arbiterBonus, 'ether'))
-    console.log('arbitrationMaxBlocks', arbitrationMaxBlocks)
-    console.log('ascii', window.web3.fromAscii(textOfBet))
+    console.log("person1", person1);
+    console.log("person2", person2);
+    console.log("arbiter", arbiter);
+    console.log("hashOfBet", hashOfBet);
+    console.log("person1Wager", window.web3.toWei(person1Wager, "ether"));
+    console.log("person2Wager", window.web3.toWei(person2Wager, "ether"));
+    console.log("arbitrationFee", window.web3.toWei(arbitrationFee, "ether"));
+    console.log("arbiterBonus", window.web3.toWei(arbiterBonus, "ether"));
+    console.log("arbitrationMaxBlocks", arbitrationMaxBlocks);
+    console.log("ascii", window.web3.fromAscii(textOfBet));
 
     contractInstance.createBet(
       person1,
       person2,
       arbiter,
       hashOfBet,
-      window.web3.toWei(person1Wager, 'ether'),
-      window.web3.toWei(person2Wager, 'ether'),
-      window.web3.toWei(arbitrationFee, 'ether'),
-      window.web3.toWei(arbiterBonus, 'ether'),
+      window.web3.toWei(person1Wager, "ether"),
+      window.web3.toWei(person2Wager, "ether"),
+      window.web3.toWei(arbitrationFee, "ether"),
+      window.web3.toWei(arbiterBonus, "ether"),
       arbitrationMaxBlocks,
       window.web3.fromAscii(textOfBet),
       (error, result) => {
@@ -178,7 +178,7 @@ export const startWatchContractEvent = (dispatch, getState) => {
             object["betClosed"] = newData[13];
 
             betContractInstance.getResolution((err, resolution) => {
-              if (error) console.log(error)
+              if (error) console.log(error);
               object["person1Resolution"] = resolution[0];
               object["person2Resolution"] = resolution[1];
               object["arbiterResolution"] = resolution[2];
@@ -224,7 +224,6 @@ export const deposit = (betAddress, ether) => {
   var transactionHash = betContractInstance.deposit.sendTransaction(
     ether,
     function(error, result) {
-      console.log("recieve >>", error, result);
       if (error) {
         console.log(error);
       } else {
@@ -236,5 +235,14 @@ export const deposit = (betAddress, ether) => {
 
 // person 1 or person 2
 export const withdrawAll = betAddress => {
-  return;
+  const betContractInstance = createContractInstance(json_bet_abi, betAddress);
+  var transactionHash = betContractInstance.withdrawAll.sendTransaction(
+    (error, result) => {
+      if (error) {
+        console.log(error);
+      } else {
+        return result;
+      }
+    }
+  );
 };
