@@ -222,7 +222,7 @@ contract Bet {
                 person2.transfer(this.balance);
             }
         }
-        else if(signedByArbiter == false || (arbitrationAllowed && block.number >= add(arbitrationStartedAtBlock, arbitrationMaxBlocks))) {
+        else if(signedByArbiter == false || (arbitrationAllowed && arbitrationMaxBlocks != 0 && block.number >= add(arbitrationStartedAtBlock, arbitrationMaxBlocks))) {
             person1.transfer(person1Paid);
             person2.transfer(person2Paid);
         }
