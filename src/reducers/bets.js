@@ -3,7 +3,6 @@ import { SET_ADDRESS, SET_ERROR, SET_BETS, CREATE_NEW_BET, NEW_SINGLE_BET } from
 const initial = {
   address: "",
   bets: [],
-  newBet: {},
   error: null
 };
 
@@ -18,7 +17,6 @@ export default function bets(state = initial, action) {
         error: action.error
       });
     case NEW_SINGLE_BET:
-      console.log(state.bets)
       return {...state, bets: [...state.bets, action.payload]}
     case CREATE_NEW_BET:
       return Object.assign({})
