@@ -85,8 +85,6 @@ export const createNewBet = (
     let chars = textOfBet.split('')
     let ascii = window.web3.fromAscii(textOfBet)
 
-    let bytes = strToByteArray(textOfBet);
-    let num = byteArrayToLong(bytes);
     contract.createBet(
       person1,
       person2,
@@ -97,7 +95,7 @@ export const createNewBet = (
       arbitrationFee,
       arbiterBonus,
       arbitrationMaxBlocks,
-      num,
+      10,
       (error, result) => {
         if (!error) {
           console.log(result);
