@@ -19,7 +19,7 @@ contract SocialMediaBetting {
         uint _arbitrationFee,
         uint _arbitrationAllowedFromBlock,
         uint _arbitrationMaxBlocks,
-        byte[] _textOfBet);
+        string _textOfBet);
 
     function createBet(
         address _person1, 
@@ -32,7 +32,7 @@ contract SocialMediaBetting {
         uint _arbitrationFee,
         uint _arbitrationAllowedFromBlock,
         uint _arbitrationMaxBlocks,
-        byte[] _textOfBet) public returns (uint) {
+        string _textOfBet) public returns (uint) {
         Bet bet = new Bet(
             _person1, 
             _person2, 
