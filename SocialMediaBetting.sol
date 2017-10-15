@@ -15,8 +15,9 @@ contract SocialMediaBetting {
         bytes32 _hashOfBet,
         uint _person1Owes,
         uint _person2Owes,
-        uint _arbitrationFee,
         uint _arbiterBonus,
+        uint _arbitrationFee,
+        uint _arbitrationAllowedFromBlock,
         uint _arbitrationMaxBlocks,
         string _textOfBet);
 
@@ -27,8 +28,9 @@ contract SocialMediaBetting {
         bytes32 _hashOfBet,
         uint _person1Owes,
         uint _person2Owes,
-        uint _arbitrationFee,
         uint _arbiterBonus,
+        uint _arbitrationFee,
+        uint _arbitrationAllowedFromBlock,
         uint _arbitrationMaxBlocks,
         string _textOfBet) public returns (uint) {
         Bet bet = new Bet(
@@ -38,8 +40,9 @@ contract SocialMediaBetting {
             _hashOfBet,
             _person1Owes,
             _person2Owes,
-            _arbitrationFee,
             _arbiterBonus,
+            _arbitrationFee,
+            _arbitrationAllowedFromBlock,
             _arbitrationMaxBlocks);
         
         uint betIndex = bets.push(bet) - 1;
@@ -56,10 +59,11 @@ contract SocialMediaBetting {
              _hashOfBet,
              _person1Owes,
              _person2Owes,
+             _arbiterBonus,
              _arbitrationFee,
-            _arbiterBonus,
-            _arbitrationMaxBlocks,
-            _textOfBet);
+             _arbitrationAllowedFromBlock,
+             _arbitrationMaxBlocks,
+             _textOfBet);
 
         return betIndex;
     }
@@ -94,8 +98,9 @@ contract Bet {
     uint person2Paid;
     uint arbitrationFee;
     uint arbiterBonus;
+    uint arbitrationAllowedFromBlock;
     uint arbitrationMaxBlocks;
-    uint arbitrationStartBlock;
+    uint arbitrationStartedAtBlock;
     bool signedByArbiter;
     bool arbitrationAllowed;
     bool arbitrationOccured;
@@ -119,8 +124,9 @@ contract Bet {
         bytes32 _hashOfBet,
         uint _person1Owes,
         uint _person2Owes,
-        uint _arbitrationFee,
         uint _arbiterBonus,
+        uint _arbitrationFee,
+        uint _arbitrationAllowedFromBlock,
         uint _arbitrationMaxBlocks
         ) public {
             require (_arbiterBonus < add(_person1Owes, _person2Owes));
@@ -133,9 +139,27 @@ contract Bet {
             hashOfBet = _hashOfBet;
             person1Owes = _person1Owes;
             person2Owes = _person2Owes;
-            arbitrationFee = _arbitrationFee;
             arbiterBonus = _arbiterBonus;
+            arbitrationFee = _arbitrationFee;
+            arbitrationAllowedFromBlock = _arbitrationAllowedFromBlock;
             arbitrationMaxBlocks = _arbitrationMaxBlocks;
+    }
+
+    function getState() public view returns (bytes32, uint, uint, uint, uint, uint, uint, uint, uint, uint, bool, bool, bool, bool) {
+        return (hashOfBet,
+                person1Owes,
+                person2Owes,
+                person1Paid,
+                person2Paid,
+                arbitrationFee,
+                arbiterBonus,
+                arbitrationAllowedFromBlock,
+                arbitrationMaxBlocks,
+                arbitrationStartedAtBlock,
+                signedByArbiter,
+                arbitrationAllowed,
+                arbitrationOccured,
+                betClosed);
     }
 
     function deposit() public payable {
@@ -174,7 +198,6 @@ contract Bet {
                 person1.transfer(this.balance);
             }
             else if(resolution == ResolutionStatus.Person2Wins) {
-                
                 if(!arbitrationOccured) {
                     person1.transfer(arbitrationFee/2);
                 }
@@ -190,7 +213,7 @@ contract Bet {
                 person2.transfer(this.balance);
             }
         }
-        else if(signedByArbiter == false || (arbitrationAllowed && block.number >= add(arbitrationStartBlock, arbitrationMaxBlocks))) {
+        else if(signedByArbiter == false || (arbitrationAllowed && block.number >= add(arbitrationStartedAtBlock, arbitrationMaxBlocks))) {
             person1.transfer(person1Paid);
             person2.transfer(person2Paid);
         }
@@ -208,12 +231,13 @@ contract Bet {
     }
     
     function startArbitration() public {
+        require (arbitrationAllowedFromBlock == 0 || block.number >= arbitrationAllowedFromBlock);
         require (msg.sender == person1 || msg.sender == person2);
         require (!arbitrationAllowed);
         require (!betClosed);
         
         arbitrationAllowed = true;
-        arbitrationStartBlock = block.number;
+        arbitrationStartedAtBlock = block.number;
     }
     
     function resolve(ResolutionStatus _resolution) public {
