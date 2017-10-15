@@ -75,19 +75,28 @@ export const createNewBet = (
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
 
-    let bytes = strToByteArray(textOfBet);
-    let num = byteArrayToLong(bytes);
+    console.log('person1', person1)
+    console.log('person2', person2)
+    console.log('arbiter', arbiter)
+    console.log('hashOfBet', hashOfBet)
+    console.log('person1Wager', window.web3.toWei(person1Wager, 'ether'))
+    console.log('person2Wager', window.web3.toWei(person2Wager, 'ether'))
+    console.log('arbitrationFee', window.web3.toWei(arbitrationFee, 'ether'))
+    console.log('arbiterBonus', window.web3.toWei(arbiterBonus, 'ether'))
+    console.log('arbitrationMaxBlocks', arbitrationMaxBlocks)
+    console.log('ascii', window.web3.fromAscii(textOfBet))
+
     contractInstance.createBet(
       person1,
       person2,
       arbiter,
       hashOfBet,
-      person1Wager,
-      person2Wager,
-      arbitrationFee,
-      arbiterBonus,
+      window.web3.toWei(person1Wager, 'ether'),
+      window.web3.toWei(person2Wager, 'ether'),
+      window.web3.toWei(arbitrationFee, 'ether'),
+      window.web3.toWei(arbiterBonus, 'ether'),
       arbitrationMaxBlocks,
-      num,
+      window.web3.fromAscii(textOfBet),
       (error, result) => {
         if (!error) {
           console.log(result);
