@@ -2,13 +2,12 @@ import Web3 from "web3";
 import { SMB_ABI, SMB_ADDRESS, BET_ABI } from "../config";
 
 export const SET_ADDRESS = "SET_ADDRESS";
-export const SET_ERROR ="SET_ERROR";
-export const SET_BETS = "SET_BETS";
+export const SET_ERROR = "SET_ERROR";
 export const CREATE_NEW_BET = "CREATE_NEW_BET";
 export const NEW_SINGLE_BET = "NEW_SINGLE_BET";
 
-
 let event;
+let contractInstance;
 
 export function initializeWeb3() {
   return async (dispatch, getState) => {
@@ -28,7 +27,6 @@ export function initializeWeb3() {
 
 const startApp = (dispatch, getState) => {
   getAccountInfo(dispatch);
-  getCurrentBets(dispatch);
   if (event) {
     stopWatchContractEvent();
   }
@@ -72,14 +70,14 @@ export const createNewBet = (
   textOfBet
 ) => {
   return dispatch => {
-    const contract = createContractInstance(JSON.parse(SMB_ABI), SMB_ADDRESS);
+    contractInstance = createContractInstance(JSON.parse(SMB_ABI), SMB_ADDRESS);
 
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
 
     let bytes = strToByteArray(textOfBet);
     let num = byteArrayToLong(bytes);
-    contract.createBet(
+    contractInstance.createBet(
       person1,
       person2,
       arbiter,
@@ -109,20 +107,6 @@ export function setError(error) {
   };
 }
 
-export function getCurrentBets(dispatch) {
-    // get contract stuff
-    let bets = [
-      { better: "0x12345", arbiter: "0xfffffff", value: "123" },
-      { better: "0xac5e3", arbiter: "0x009c123", value: "623" },
-      { better: "0x84c8a", arbiter: "0x6cd35da", value: "733" }
-    ];
-    dispatch({
-      type: "SET_BETS",
-      payload: bets
-    });
-}
-
-
 const getBalance = address => {
   window.web3.eth.getBalance(address, window.web3.eth.defaultBlock, function(
     error,
@@ -141,31 +125,41 @@ export const stopWatchContractEvent = () => {
 };
 
 export const startWatchContractEvent = (dispatch, getState) => {
-    const { account } = getState();
-    const abi_json = JSON.parse(SMB_ABI);
-    const contractInstance = createContractInstance(abi_json, SMB_ADDRESS);
-    const indexedEventValues = [{
+  const { account } = getState();
+  const abi_json = JSON.parse(SMB_ABI);
+  contractInstance = createContractInstance(abi_json, SMB_ADDRESS);
+  const indexedEventValues = [
+    {
       _person1: account.address,
       _person2: account.address,
-      _arbiter: account.address,
-    }];
-    const filterOptions = {
-      fromBlock: 1066074,
-      toBlock: "latest"
-    };
-    event = contractInstance.LogBetCreated(indexedEventValues, filterOptions);
+      _arbiter: account.address
+    }
+  ];
+  const filterOptions = {
+    fromBlock: 1066074,
+    toBlock: "latest"
+  };
+  event = contractInstance.LogBetCreated(indexedEventValues, filterOptions);
 
-    event.watch(function(error, result) {
-      if (error) {
-        console.error("Contract Event Error");
-      } else {
-        dispatch({
-          type: NEW_SINGLE_BET,
-          payload: result
-        })
-      }
-    });
-
+  event.watch(function(error, result) {
+    if (error) {
+      console.error("Contract Event Error");
+    } else {
+      const betIndex = result.args.id;
+      var value = contractInstance.getBet.call(
+        betIndex,
+        (error, betAddress) => {
+          if (error) console.log(error);
+          const object = result;
+          object["betAddress"] = betAddress;
+          return dispatch({
+            type: NEW_SINGLE_BET,
+            payload: object
+          });
+        }
+      );
+    }
+  });
 };
 
 const createContractInstance = (contractAbi, contractAddress) => {
@@ -191,3 +185,19 @@ function byteArrayToLong(byteArray) {
 
   return value;
 }
+
+export const deposit = (betAddress, ether) => {
+  const json_abi = JSON.parse(BET_ABI);
+  const betContractInstance = createContractInstance(json_abi, betAddress);
+  var transactionHash = betContractInstance.deposit.sendTransaction(
+    ether,
+    function(error, result) {
+      console.log("recieve >>", error, result);
+      if (error) {
+        console.log(error);
+      } else {
+        return result;
+      }
+    }
+  );
+};
