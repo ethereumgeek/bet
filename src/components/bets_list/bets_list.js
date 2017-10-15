@@ -9,7 +9,6 @@ class BetsList extends Component {
 
   render() {
     const { bets } = this.props
-    console.log(bets)
     return (
       <table className="table bg-color-white">
         <tbody>

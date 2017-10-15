@@ -161,11 +161,23 @@ export const startWatchContractEvent = (dispatch, getState) => {
           );
           betContractInstance.getState((error, newData) => {
             if (error) console.log(error);
-            object["betState"] = newData;
-            console.log(object);
-            return dispatch({
-              type: NEW_SINGLE_BET,
-              payload: object
+            object["person1Paid"] = newData[3];
+            object["person2Paid"] = newData[4];
+            object["signedByArbiter"] = newData[10];
+            object["arbitrationAllowed"] = newData[11];
+            object["arbitrationOccured"] = newData[12];
+            object["betClosed"] = newData[13];
+
+            betContractInstance.getResolution((err, resolution) => {
+              if (error) console.log(error)
+              object["person1Resolution"] = resolution[0];
+              object["person2Resolution"] = resolution[1];
+              object["arbiterResolution"] = resolution[2];
+              object["resolution"] = resolution[3];
+              return dispatch({
+                type: NEW_SINGLE_BET,
+                payload: object
+              });
             });
           });
         }
