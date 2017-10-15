@@ -9,6 +9,8 @@ export const NEW_SINGLE_BET = "NEW_SINGLE_BET";
 let event;
 let contractInstance;
 
+const json_bet_abi = JSON.parse(BET_ABI);
+
 export function initializeWeb3() {
   return async (dispatch, getState) => {
     setTimeout(() => {
@@ -152,9 +154,19 @@ export const startWatchContractEvent = (dispatch, getState) => {
           if (error) console.log(error);
           const object = result;
           object["betAddress"] = betAddress;
-          return dispatch({
-            type: NEW_SINGLE_BET,
-            payload: object
+
+          const betContractInstance = createContractInstance(
+            json_bet_abi,
+            betAddress
+          );
+          betContractInstance.getState((error, newData) => {
+            if (error) console.log(error);
+            object["betState"] = newData;
+            console.log(object);
+            return dispatch({
+              type: NEW_SINGLE_BET,
+              payload: object
+            });
           });
         }
       );
@@ -187,8 +199,7 @@ function byteArrayToLong(byteArray) {
 }
 
 export const deposit = (betAddress, ether) => {
-  const json_abi = JSON.parse(BET_ABI);
-  const betContractInstance = createContractInstance(json_abi, betAddress);
+  const betContractInstance = createContractInstance(json_bet_abi, betAddress);
   var transactionHash = betContractInstance.deposit.sendTransaction(
     ether,
     function(error, result) {
@@ -200,4 +211,9 @@ export const deposit = (betAddress, ether) => {
       }
     }
   );
+};
+
+// person 1 or person 2
+export const withdrawAll = betAddress => {
+  return;
 };
