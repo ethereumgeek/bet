@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { createNewBet } from '../actions/'
+import { daysToBlocks } from '../utils/eth'
 import './Create.css'
 
 const numericInputs = [
@@ -54,13 +55,13 @@ class Create extends Component {
     this.props.createNewBet(
       this.state.p1Address,
       this.state.p2Address,
-      this.state.arbiter,
+      this.state.arbitrationAddress,
       '0xdfbcd696a16a7c86b852aa2ddd2dedc7a3feaf78', // dummy hash used for testing
       this.state.p1Wager,
       this.state.p2Wager,
       this.state.arbitrationFee,
       this.state.arbitrationBonus,
-      this.state.arbitrationTimeout,
+      daysToBlocks(this.state.arbitrationTimeout),
       this.state.statement,
     )
     this.props.history.push('/')

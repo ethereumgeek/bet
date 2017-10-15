@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
+import { blocksToDays } from '../utils/eth'
+import './Details.css'
 
 const testBet = {
   statement: 'Hello world!',
@@ -15,12 +17,21 @@ const testBet = {
 
 const truncate = str => str.substr(0, 16) + '...'
 
+const ether = wei => window.web3.fromWei(parseInt(wei.toString(10)), 'ether')
+
 class Detail extends Component {
   render() {
     const bet = this.props.bets[this.props.match.params.id]
     console.log(bet)
 
     if (!bet) return 'Loading...'
+
+    const arbCosts = bet.args._arbitrationFee.plus(bet.args._arbiterBonus).dividedBy(2)
+    const person1BuyIn = bet.args._person1Owes.plus(arbCosts)
+    const person2BuyIn = bet.args._person2Owes.plus(arbCosts)
+
+    console.log('p1owes', bet.args._person1Owes);
+    console.log('buyin', person1BuyIn);
 
     return (
       <div>
@@ -34,18 +45,25 @@ class Detail extends Component {
         <div className="panel panel-success">
           <div className="panel-heading">
             <strong>
-              {truncate('address')} thinks the statement will be true
+              {truncate(bet.args._person1)} thinks the statement will be true
             </strong>
           </div>
           <div className="panel-body row">
             <div className="col-md-6">
-              <h3>Wager: wager ETH</h3>
+              <h3>Wager: {ether(bet.args._person1Owes)} ETH</h3>
             </div>
             <div className="col-md-6">
-              <div className="btn-group pull-right">
-                <button className="btn btn-default">Buy In</button>
-                <button className="btn btn-default">Withdraw</button>
-                <button className="btn btn-default">Resolve</button>
+              <div className="row">
+                <div className="btn-group pull-right wager-buttons">
+                  <button className="btn btn-default">Buy In</button>
+                  <button className="btn btn-default">Withdraw</button>
+                  <button className="btn btn-default">Resolve</button>
+                </div>
+              </div>
+              <div className="row text-right">
+                <div className="col-xs-12">
+                  <em>Total buy-in, including arbitration costs: {ether(person1BuyIn)} ETH</em>
+                </div>
               </div>
             </div>
           </div>
@@ -53,35 +71,42 @@ class Detail extends Component {
         <div className="panel panel-danger">
           <div className="panel-heading text-right">
             <strong>
-              {truncate('address')} thinks the statement will be false
+              {truncate(bet.args._person2)} thinks the statement will be false
             </strong>
           </div>
           <div className="panel-body row">
             <div className="col-md-6">
-              <div className="btn-group">
-                <button className="btn btn-default">Buy In</button>
-                <button className="btn btn-default">Withdraw</button>
-                <button className="btn btn-default">Resolve</button>
+              <div className="row">
+                <div className="btn-group wager-buttons">
+                  <button className="btn btn-default">Buy In</button>
+                  <button className="btn btn-default">Withdraw</button>
+                  <button className="btn btn-default">Resolve</button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-xs-12">
+                  <em>Total buy-in, including arbitration costs: {ether(person2BuyIn)} ETH</em>
+                </div>
               </div>
             </div>
             <div className="col-md-6">
-              <h3 className="text-right">Wager: wager ETH</h3>
+              <h3 className="text-right">Wager: {ether(bet.args._person2Owes)} ETH</h3>
             </div>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6">
             <div>
-              <strong>Arbiter:</strong> {truncate('123')}
+              <strong>Arbiter:</strong> {truncate(bet.args._arbiter)}
             </div>
             <div>
-              <strong>Arbitration Fee:</strong> fee ETH
+              <strong>Arbitration Fee:</strong> {ether(bet.args._arbitrationFee)} ETH
             </div>
             <div>
-              <strong>Arbitration Bonus:</strong> bonus ETH
+              <strong>Arbitration Bonus:</strong> {ether(bet.args._arbiterBonus)} ETH
             </div>
             {false
-            ? <div><strong>Arbitration Timeout:</strong> timeout</div>
+            ? <div><strong>Arbitration Timeout:</strong> {blocksToDays(bet.args._arbitrationMaxBlocks)} days</div>
             : null}
           </div>
           <div className="col-md-6">

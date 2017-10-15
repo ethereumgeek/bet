@@ -15,7 +15,7 @@ class BetsList extends Component {
           {bets.map( (bet, id) => (
             <tr key={id}>
               <td>
-                <a href={`/bets/${id}`}>
+                <a onClick={() => this.handleLinkClicked(id)}>
                   {bet.args._textOfBet}
                 </a>
               </td>
