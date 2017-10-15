@@ -9,6 +9,8 @@ export const NEW_SINGLE_BET = "NEW_SINGLE_BET";
 let event;
 let contractInstance;
 
+const json_bet_abi = JSON.parse(BET_ABI);
+
 export function initializeWeb3() {
   return async (dispatch, getState) => {
     setTimeout(() => {
@@ -75,19 +77,28 @@ export const createNewBet = (
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
 
-    let bytes = strToByteArray(textOfBet);
-    let num = byteArrayToLong(bytes);
+    console.log('person1', person1)
+    console.log('person2', person2)
+    console.log('arbiter', arbiter)
+    console.log('hashOfBet', hashOfBet)
+    console.log('person1Wager', window.web3.toWei(person1Wager, 'ether'))
+    console.log('person2Wager', window.web3.toWei(person2Wager, 'ether'))
+    console.log('arbitrationFee', window.web3.toWei(arbitrationFee, 'ether'))
+    console.log('arbiterBonus', window.web3.toWei(arbiterBonus, 'ether'))
+    console.log('arbitrationMaxBlocks', arbitrationMaxBlocks)
+    console.log('ascii', window.web3.fromAscii(textOfBet))
+
     contractInstance.createBet(
       person1,
       person2,
       arbiter,
       hashOfBet,
-      person1Wager,
-      person2Wager,
-      arbitrationFee,
-      arbiterBonus,
+      window.web3.toWei(person1Wager, 'ether'),
+      window.web3.toWei(person2Wager, 'ether'),
+      window.web3.toWei(arbitrationFee, 'ether'),
+      window.web3.toWei(arbiterBonus, 'ether'),
       arbitrationMaxBlocks,
-      num,
+      window.web3.fromAscii(textOfBet),
       (error, result) => {
         if (!error) {
           console.log(result);
@@ -152,9 +163,31 @@ export const startWatchContractEvent = (dispatch, getState) => {
           if (error) console.log(error);
           const object = result;
           object["betAddress"] = betAddress;
-          return dispatch({
-            type: NEW_SINGLE_BET,
-            payload: object
+
+          const betContractInstance = createContractInstance(
+            json_bet_abi,
+            betAddress
+          );
+          betContractInstance.getState((error, newData) => {
+            if (error) console.log(error);
+            object["person1Paid"] = newData[3];
+            object["person2Paid"] = newData[4];
+            object["signedByArbiter"] = newData[10];
+            object["arbitrationAllowed"] = newData[11];
+            object["arbitrationOccured"] = newData[12];
+            object["betClosed"] = newData[13];
+
+            betContractInstance.getResolution((err, resolution) => {
+              if (error) console.log(error)
+              object["person1Resolution"] = resolution[0];
+              object["person2Resolution"] = resolution[1];
+              object["arbiterResolution"] = resolution[2];
+              object["resolution"] = resolution[3];
+              return dispatch({
+                type: NEW_SINGLE_BET,
+                payload: object
+              });
+            });
           });
         }
       );
@@ -187,8 +220,7 @@ function byteArrayToLong(byteArray) {
 }
 
 export const deposit = (betAddress, ether) => {
-  const json_abi = JSON.parse(BET_ABI);
-  const betContractInstance = createContractInstance(json_abi, betAddress);
+  const betContractInstance = createContractInstance(json_bet_abi, betAddress);
   var transactionHash = betContractInstance.deposit.sendTransaction(
     ether,
     function(error, result) {
@@ -200,4 +232,9 @@ export const deposit = (betAddress, ether) => {
       }
     }
   );
+};
+
+// person 1 or person 2
+export const withdrawAll = betAddress => {
+  return;
 };

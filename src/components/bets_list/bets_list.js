@@ -9,14 +9,13 @@ class BetsList extends Component {
 
   render() {
     const { bets } = this.props
-    console.log(bets)
     return (
       <table className="table bg-color-white">
         <tbody>
           {bets.map( (bet, id) => (
             <tr key={id}>
               <td>
-                <a href={`/bets/${id}`}>
+                <a onClick={() => this.handleLinkClicked(id)}>
                   {bet.args._textOfBet}
                 </a>
               </td>
