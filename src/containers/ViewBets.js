@@ -4,7 +4,7 @@ import { BetsList } from '../components'
 
 const ViewBets = (props) => (
   <div>
-    <h1>ViewBets.js</h1>
+    <h1>My Bets</h1>
     <BetsList bets={props.bets}></BetsList>
   </div>
 

@@ -17,7 +17,7 @@ const BetsList = ({bets}) => {
             <td>{bet.better}</td>
             <td>{bet.arbiter}</td>
             <td>{bet.value}</td>
-            <td>{bet.content}</td>
+            {/* <td>{bet.content}</td> */}
           </tr>
         ))}
       </tbody>

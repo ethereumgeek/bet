@@ -1,3 +1,5 @@
+import { SET_ADDRESS, SET_ERROR, SET_BETS, CREATE_NEW_BET, NEW_SINGLE_BET } from '../actions';
+
 const initial = {
   address: "",
   bets: [],
@@ -7,19 +9,18 @@ const initial = {
 
 export default function bets(state = initial, action) {
   switch (action.type) {
-    case "SET_ADDRESS":
+    case SET_ADDRESS:
       return Object.assign({}, state, {
         address: action.address
       });
-    case "SET_ERROR":
+    case SET_ERROR:
       return Object.assign({}, state, {
         error: action.error
       });
-    case "SET_BETS":
-      return Object.assign({}, state, {
-        bets: action.bets
-      });
-    case "CREATE_NEW_BET":
+    case NEW_SINGLE_BET:
+      console.log(state.bets)
+      return {...state, bets: [...state.bets, action.payload]}
+    case CREATE_NEW_BET:
       return Object.assign({})
     default:
       return state;
