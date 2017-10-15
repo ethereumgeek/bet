@@ -77,6 +77,14 @@ export const createNewBet = (
     // Ensure default account is set to sign the transaction
     window.web3.eth.defaultAccount = window.web3.eth.accounts[0];
 
+    // Testing stuff
+    console.log(textOfBet)
+    let bytes = strToByteArray(textOfBet)
+    let num = byteArrayToLong(bytes)
+    let hex = window.web3.toHex(textOfBet)
+    let chars = textOfBet.split('')
+    let ascii = window.web3.fromAscii(textOfBet)
+
     let bytes = strToByteArray(textOfBet);
     let num = byteArrayToLong(bytes);
     contract.createBet(
