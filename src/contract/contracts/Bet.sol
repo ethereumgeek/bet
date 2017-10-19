@@ -196,22 +196,24 @@ contract Bet {
         if (resolution != ResolutionStatus.None) {
             betClosed = true;
             if (resolution == ResolutionStatus.Person1Wins) {
-                if (!arbitrationOccured) {
-                    person2.transfer(arbitrationFee/2);
+                if (!arbitrationOccured || person2Resolution == arbiterResolution) {
+                    person2.transfer(arbitrationFee);
                 }
                 person1.transfer(this.balance);
             }else if (resolution == ResolutionStatus.Person2Wins) {
-                if (!arbitrationOccured) {
-                    person1.transfer(arbitrationFee/2);
+                if (!arbitrationOccured || person1Resolution == arbiterResolution) {
+                    person1.transfer(arbitrationFee);
                 }
                 person2.transfer(this.balance);
             }else if (resolution == ResolutionStatus.Tie) {
-                if (arbitrationOccured) {
-                    person1.transfer(sub(person1Paid, add(arbitrationFee,arbiterBonus)/2));
-                }else {
+                if (!arbitrationOccured || person1Resolution == arbiterResolution) {
                     person1.transfer(sub(person1Paid, arbiterBonus/2));
+                    person2.transfer(this.balance);          
+                }else {
+                    // Arbitration occurred supporting person2's judgment
+                    person2.transfer(sub(person2Paid, arbitrationFee/2));
+                    person1.transfer(this.balance);
                 }
-                person2.transfer(this.balance);
             }
         }else if (signedByArbiter == false || (arbitrationTimeoutBlock != 0 && 
                     arbitrationAllowed && block.number >= arbitrationTimeoutBlock)) {
@@ -228,7 +230,7 @@ contract Bet {
         require (!betClosed);
         
         signedByArbiter = true;
-        arbiter.transfer(arbiterBonus);
+        arbiter.transfer(arbiterBonus); // We could optimize sends by waiting until arbitrator is paid
     }
     
     function startArbitration() public {
