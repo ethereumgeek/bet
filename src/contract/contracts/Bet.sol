@@ -1,10 +1,11 @@
 pragma solidity ^0.4.0;
-contract SocialMediaBetting {
+
+contract BetManager {
     
     Bet[] bets;
     mapping(address => uint[]) betsForAddress;
 
-    function SocialMediaBetting() public {
+    function BetManager() public {
     }
 
     event LogBetCreated(
@@ -19,8 +20,7 @@ contract SocialMediaBetting {
         uint _arbitrationFee,
         uint _minBlocksBeforeArbitrationAfterArbitrationStart,
         uint _arbitrationAllowedFromBlock,
-        uint _arbitrationTimeoutBlock,
-        byte[] _textOfBet);
+        uint _arbitrationTimeoutBlock);
 
     function createBet(
         address _person1, 
@@ -33,8 +33,7 @@ contract SocialMediaBetting {
         uint _arbitrationFee,
         uint _minBlocksBeforeArbitrationAfterArbitrationStart,
         uint _arbitrationAllowedFromBlock,
-        uint _arbitrationTimeoutBlock,
-        byte[] _textOfBet) public returns (uint) {
+        uint _arbitrationTimeoutBlock) public returns (uint) {
         Bet bet = new Bet(
             _person1, 
             _person2, 
@@ -66,13 +65,12 @@ contract SocialMediaBetting {
              _arbitrationFee,
              _minBlocksBeforeArbitrationAfterArbitrationStart,
              _arbitrationAllowedFromBlock,
-             _arbitrationTimeoutBlock,
-             _textOfBet);
+             _arbitrationTimeoutBlock);
 
         return betIndex;
     }
     
-    function getBet(uint _betIndex) public view returns (Bet) {
+    function getBet(uint _betIndex) public view returns (address) {
         require(_betIndex < bets.length);
         return bets[_betIndex];
     }
@@ -176,7 +174,7 @@ contract Bet {
         if (msg.sender == person1) {
             person1Paid = add(person1Paid, msg.value);
             
-            if(person1Paid > person1Owes) {
+            if (person1Paid > person1Owes) {
                 refund = sub(person1Paid, person1Owes);
                 person1Paid = person1Owes;
                 person1.transfer(refund);
@@ -184,7 +182,7 @@ contract Bet {
         } else if (msg.sender == person2) {
             person2Paid = add(person2Paid, msg.value);
             
-            if(person2Paid > person2Owes) {
+            if (person2Paid > person2Owes) {
                 refund = sub(person2Paid, person2Owes);
                 person2Paid = person2Owes;
                 person2.transfer(refund);
@@ -195,25 +193,22 @@ contract Bet {
     function withdrawAll() public {
         require(msg.sender == person1 || msg.sender == person2);
         
-        if(resolution != ResolutionStatus.None) {
+        if (resolution != ResolutionStatus.None) {
             betClosed = true;
-            if(resolution == ResolutionStatus.Person1Wins) {
-                if(!arbitrationOccured) {
+            if (resolution == ResolutionStatus.Person1Wins) {
+                if (!arbitrationOccured) {
                     person2.transfer(arbitrationFee/2);
                 }
                 person1.transfer(this.balance);
-            }
-            else if(resolution == ResolutionStatus.Person2Wins) {
-                if(!arbitrationOccured) {
+            }else if (resolution == ResolutionStatus.Person2Wins) {
+                if (!arbitrationOccured) {
                     person1.transfer(arbitrationFee/2);
                 }
                 person2.transfer(this.balance);
-            }
-            else if(resolution == ResolutionStatus.Tie) {
-                if(arbitrationOccured) {
+            }else if (resolution == ResolutionStatus.Tie) {
+                if (arbitrationOccured) {
                     person1.transfer(sub(person1Paid, add(arbitrationFee,arbiterBonus)/2));
-                }
-                else {
+                }else {
                     person1.transfer(sub(person1Paid, arbiterBonus/2));
                 }
                 person2.transfer(this.balance);
@@ -265,9 +260,9 @@ contract Bet {
         
         if (person1Resolution == person2Resolution && person1Resolution != ResolutionStatus.None) {
             resolution = person1Resolution;
-        }else if (arbitrationAllowed 
-            && (person1Resolution == arbiterResolution || person2Resolution == arbiterResolution) 
-            && arbiterResolution != ResolutionStatus.None) {
+        }else if (arbitrationAllowed && 
+            (person1Resolution == arbiterResolution || person2Resolution == arbiterResolution) &&
+            arbiterResolution != ResolutionStatus.None) {
                 
             resolution = arbiterResolution;
             arbitrationOccured = true;
